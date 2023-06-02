@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<global-property doc:name="Global Property" doc:id="ce2e164c-8cf3-4666-bf33-805dd29a7fd0" name="env" value="local" />
+	<configuration-properties doc:name="Configuration properties" doc:id="76a1e4f3-8698-45db-8248-ce17681d7e71" file="properties/${env}.properties" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e5ab1f20-b2ef-48e7-9d58-812b4b10acb2" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<jms:config name="JMS_Config" doc:name="JMS Config" doc:id="98ca99e5-4cbc-4eaf-a3cd-d76c1e15e0d0" >
+		<jms:active-mq-connection username="${activeMQ.client.username}" password="${activeMQ.client.password}" >
+			<jms:factory-configuration brokerUrl="${activeMQ.client.url}" />
+		</jms:active-mq-connection>
+	</jms:config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="c365fc7d-2be2-4c94-b1d9-b7f1674e2dec" >
+		<salesforce:basic-connection username="${salesforce.client.username}" password="${salesforce.client.password}" securityToken="${salesforce.client.token}" />
+	</salesforce:sfdc-config>
+</mule>

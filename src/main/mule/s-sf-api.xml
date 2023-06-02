@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<flow name="saleforceImplementationFlow" doc:id="cd7fcb5d-ae69-4072-84fa-91b211d69fad" >
+		<jms:listener doc:name="On New Message for sales force qeueu" doc:id="f91502b2-b7a5-4e93-ab3a-bf6da4499479" destination="${activeMQ.client.saleforceQueue}" config-ref="JMS_Config">
+			<jms:consumer-type>
+				<jms:queue-consumer />
+			</jms:consumer-type>
+		</jms:listener>
+		<logger level="INFO" doc:name="start of the salesforce connector listener" doc:id="ccadacfc-cb96-4229-8830-559fcae7c86f" message='"start of the salesforce consumer"' />
+		<ee:transform doc:name="mapping data from queue to salesforce object" doc:id="e05b25ed-a5ac-4848-b053-8026e1c03bb3" >
+			<ee:message >
+				<ee:set-payload resource="dwl/queueToSalesforceMappling.dwl" />
+			</ee:message>
+		</ee:transform>
+		<salesforce:create type="wbs__c" doc:id="cb1fc627-f164-49df-8869-c3710158fab3" config-ref="Salesforce_Config" doc:name="insert the data in to salesforce object" />
+		<ee:transform doc:name="return response" doc:id="bc2184e1-8817-4658-a7a2-d57c8dc1b9a7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End of the salesforce consumser connector " doc:id="8ae39785-c0f7-4d54-afd6-9018912e08ed" message='"End of the salesforce consumser connector"' />
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="95773a8a-2bbc-427a-a523-18f9fc9f833e" type="SALESFORCE:COMMUNICATION, SALESFORCE:CONNECTIVITY, SALESFORCE:INSUFFICIENT_PERMISSIONS" >
+				<logger level="ERROR" doc:name="salesforce connectivity issue" doc:id="467ffe8f-0147-4d94-80f4-b3ee99f7f323" message='"salesforce connectivity issue"' />
+				<ee:transform doc:name="salesforce connectivity issue found" doc:id="848be010-a2b8-4772-b071-1c7444673592" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"salesforce connectivity issue found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="JMS:CONNECTIVITY issue found" doc:id="245a9aa4-8ce4-4a3b-9876-28cf77fe8826" type="JMS:CONNECTIVITY, JMS:CONSUMING, JMS:DESTINATION_NOT_FOUND, JMS:RETRY_EXHAUSTED, JMS:SECURITY" >
+				<logger level="ERROR" doc:name="JMS:CONNECTIVITY issue found" doc:id="67954e8d-340d-4820-8da8-f9951f63cca7" message='"JMS:CONNECTIVITY issue found"' />
+				<ee:transform doc:name="JSM connectivity issue found" doc:id="10229030-696b-4cff-baf6-9b3ed1e1ff1e" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"JSM connectivity issue found"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate1" doc:id="25e02d98-ea2a-4baf-a89c-5bfb20da45e8" type="ANY" >
+				<logger level="ERROR" doc:name="issue found" doc:id="8173d5fc-9ec9-4004-a793-32638a55cd02" />
+				<ee:transform doc:name="issue message" doc:id="5eb5dca2-cbef-4662-b0d3-fdf4cb2e1466" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message:"issue found in any"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>
