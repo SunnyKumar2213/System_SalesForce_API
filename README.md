@@ -1,92 +1,44 @@
 # s-sf-api
 
-
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.iworks.solutions/skumar/s-sf-api.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.iworks.solutions/skumar/s-sf-api/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
 ## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+This project follows the API-led connectivity architecture and focuses on integrating data from a JMS Queue (ActiveMQ) into a Salesforce database. It involves setting up ActiveMQ and Salesforce accounts for data exchange.
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+The project utilizes the "On New Message" connector of the JMS Queue to receive data. It then maps the received data to the Salesforce database, uploading the data accordingly. The project captures the response from Salesforce and returns it as the payload.
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+Error handling is a vital aspect of the project. It incorporates different "On Error" mechanisms to handle various errors, such as Salesforce communication errors (SALESFORCE:COMMUNICATION), connectivity errors (SALESFORCE:CONNECTIVITY), and insufficient permissions errors (SALESFORCE:INSUFFICIENT_PERMISSIONS). Similarly, it handles JMS connectivity errors (JMS:CONNECTIVITY), consuming errors (JMS:CONSUMING), destination not found errors (JMS:DESTINATION_NOT_FOUND), retry exhausted errors (JMS:RETRY_EXHAUSTED), and security-related errors (JMS:SECURITY).
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+The project includes MUnit test cases, achieving code coverage of approximately 80%. These test cases validate the functionality of the code and ensure expected results are achieved. Additionally, third-party tools are effectively mocked to facilitate testing and minimize dependencies.
+
+All confidential information, such as IDs, passwords, and queue names, are stored in a properties file and can only be accessed through environment variables, ensuring security and protecting sensitive data.
+
+## Getting Started
+To get started with this project, follow the steps below:
+
+1. Set up ActiveMQ and Salesforce accounts to establish the necessary connections for data exchange.
+2. Configure the project to connect to the ActiveMQ JMS Queue. Update the project's configuration file with the necessary connection details, including the broker URL, username, password, and the queue name from which data will be fetched.
+3. Implement the logic to receive data from the JMS Queue using the "On New Message" connector. Capture the payload and process it accordingly.
+4. Map the received data to the Salesforce database, ensuring the correct data fields are populated for proper upload.
+5. Handle errors using the appropriate "On Error" mechanisms. Implement error handling for Salesforce communication errors (SALESFORCE:COMMUNICATION), connectivity errors (SALESFORCE:CONNECTIVITY), insufficient permissions errors (SALESFORCE:INSUFFICIENT_PERMISSIONS), JMS connectivity errors (JMS:CONNECTIVITY), consuming errors (JMS:CONSUMING), destination not found errors (JMS:DESTINATION_NOT_FOUND), retry exhausted errors (JMS:RETRY_EXHAUSTED), and security-related errors (JMS:SECURITY).
+6. Develop MUnit test cases to validate the functionality of the code. Aim for code coverage of approximately 80% to ensure comprehensive testing.
+7. Utilize effective mocking techniques to simulate the behavior of third-party tools during testing, minimizing dependencies.
+8. Store all confidential information, such as IDs, passwords, and queue names, in a properties file. Ensure that these details can only be accessed through environment variables for enhanced security and data protection.
+
+## Components and Dependencies
+- JMS Queue (ActiveMQ) for message handling and processing
+- Salesforce database for data storage and retrieval
+- "On New Message" connector for receiving data from the JMS Queue
+- Mapping logic to map the received data to Salesforce fields
+- "On Error" mechanisms for handling Salesforce and JMS errors
+- MUnit test cases for code coverage and validation
+- Mocking of third-party tools for testing purposes
+- Properties file for storing confidential information
+- Environment variables for secure access to confidential data
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+This project plays a critical role in the API-led connectivity architecture, allowing for seamless integration of data from a JMS Queue into a Salesforce database. It ensures reliable data exchange and includes robust error handling mechanisms. The MUnit test cases and mocking techniques ensure thorough testing, and the use of a properties file and environment variables ensures the security and confidentiality of sensitive data.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Contributions
+Contributions to this project are welcome. If you encounter any issues or have suggestions for improvements, please open an issue or submit a pull request.
 
 ## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the [MIT License](link-to-your-license-file).
